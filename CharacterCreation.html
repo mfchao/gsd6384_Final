@@ -17,21 +17,21 @@
       <h2>Who are you?</h2>
       <div class="question-0" id="question-0">
         <h3>Which one do you most identify as?</h3><br>
-        <input type="radio" name="question0" id ="response" value="option1" onclick="updateShapeType('option1')" />
+        <input type="radio" name="question0" id ="response" value="0-option1" onclick="getIndexes('0-option1')" />
         <label for="option1">Good interpersonal relationships are the most important thing to me. It is important for me to be happy in my surroundings. 
           I am “that” connection which keeps all my colleagues/peers together. I have ability to stabilize the group and a high capacity for empathy and joy, 
           and the pain of others is also my own pain.</label> <br><br>
 
-        <input type="radio" name="question0" value="option2" onclick="updateShapeType('option2')" />
+        <input type="radio" name="question0" value="0-option2" onclick="getIndexes('0-option2')" />
         <label for="option2"> I am a hard worker who constantly pushes forward and always wants to finish things I start. My patience and methodology are some of 
           my major qualities in all life situations. I am able to analyze for hours how to reach a solution rather than follow my intuition.</label><br><br>
 
-        <input type="radio" name="question0" value="option3" onclick="updateShapeType('option3')" />
+        <input type="radio" name="question0" value="0-option3" onclick="getIndexes('0-option3')" />
         <label for="option3">I was a born manager, and can easily focus on a purposeful goal. I can carefully analyze the situation while receiving and 
           remembering new information like a sponge. I have a lot of self-confidence and I always want to be right about everything. I prefer control, 
           critical thinking, innovation, precision, visibility, ambition, comprehensiveness, objectivity, focus, inclination to respect hierarchy. </label><br><br>
 
-          <input type="radio" name="question0" value="option4" onclick="updateShapeType('option4')" />
+          <input type="radio" name="question0" value="0-option4" onclick="getIndexes('0-option4')" />
         <label for="option4">I am a very creative person. I rely on imagination and I have the power to create a balanced view of the world and see 
           its inner beauty. On the other side, I am very restless and I cannot stay and work for a long time in same place. I get bored easily, especially 
           because of the fact that I believe that nothing is final and written by the rules. </label><br><br>
@@ -41,38 +41,72 @@
       </div>
       <div class="hidden" id="question-1">
         <h3>Which one best describes you?</h3><br><br>
-        <input type="radio" name="question1" id ="response" value="option1" onclick="updateEdgeType('option1')" />
-        <label for="option1">I am extremely agreeable.</label><br><br>
+        <input type="radio" name="question1" id ="response" value="1-option1" onclick="getIndexes('1-option1')" />
+        <label for="option1">I always complete tasks succesfully and I constantly excel in what I do.</label><br><br>
 
-        <input type="radio" name="question1" value="option2" onclick="updateEdgeType('option2')" />
-        <label for="option2">I am pretty agreeable.</label><br><br>
+        <input type="radio" name="question1" value="1-option2" onclick="getIndexes('1-option2')" />
+        <label for="option2">I work hard and I usually know how to get things done.</label><br><br>
 
-        <input type="radio" name="question1" value="option3" onclick="updateEdgeType('option3')" />
-        <label for="option3">I am somewhat agreeable.</label><br><br>
+        <input type="radio" name="question1" value="1-option3" onclick="getIndexes('1-option3')" />
+        <label for="option3">I often keep my promises and I try to tell the truth most of the time.</label><br><br>
 
-        <input type="radio" name="question1" value="option4" onclick="updateEdgeType('option4')" />
-        <label for="option4">I am not agreeable.</label><br><br>
+        <input type="radio" name="question1" value="1-option4" onclick="getIndexes('1-option4')" />
+        <label for="option4">I like to take things easy and am not always super tidy.</label><br><br>
 
         <button id="back-button" onclick="previousQuestion()">Back</button>
         <button id="next-question-btn" onclick="nextQuestion()">Next Question</button>
       </div>
       <div class="hidden" id="question-2">
         <h3>Which one best describes you?</h3><br><br>
-        <input type="radio" name="question2" id ="response" value="option1" onclick="updateColorType('option1')" />
+        <input type="radio" name="question2" id ="response" value="2-option1" onclick="getIndexes('2-option1')" />
+        <label for="option1">I am always concerned for others and I put others before myself.</label><br><br>
+
+        <input type="radio" name="question2" value="2-option2" onclick="getIndexes('2-option2')" />
+        <label for="option2">I like helping others and I often believe that others have good intentions.</label><br><br>
+
+        <input type="radio" name="question2" value="2-option3" onclick="getIndexes('2-option3')" />
+        <label for="option3">I am sometimes indifferent to others' feelings and I try not to think about the needy.</label><br><br>
+
+        <input type="radio" name="question2" value="2-option4" onclick="getIndexes('2-option4')" />
+        <label for="option4">I am not afraid to yell at someone if they deserve it, and am not afraid to say no.</label><br><br>
+
+        <button id="back-button" onclick="previousQuestion()">Back</button>
+        <button id="next-question-btn" onclick="nextQuestion()">Next Question</button>
+      </div>
+      <div class="hidden" id="question-3">
+        <h3>Which one best describes you?</h3><br><br>
+        <input type="radio" name="question3" id ="response" value="3-option1" onclick="getIndexes('3-option1')" />
         <label for="option1">I am active, energetic, generous, open-minded, and playful.</label><br><br>
 
-        <input type="radio" name="question2" value="option2" onclick="updateColorType('option2')" />
+        <input type="radio" name="question3" value=3-option2" onclick="getIndexes('3-option2')" />
         <label for="option2">I am ambitious, passionate, confident, and strong-willed.</label><br><br>
 
-        <input type="radio" name="question2" value="option3" onclick="updateColorType('option3')" />
+        <input type="radio" name="question3" value="3-option3" onclick="getIndexes('3-option3')" />
         <label for="option3">I am loyal, empathetic, sincere, and calm.</label><br><br>
 
-        <input type="radio" name="question2" value="option3" onclick="updateColorType('option4')" />
+        <input type="radio" name="question3" value="3-option3" onclick="getIndexes('3-option4')" />
         <label for="option3">I am introverted, cynical, curious, and intellectual.</label><br><br>
 
         <button id="back-button" onclick="previousQuestion()">Back</button>
-        <button id="next-question-btn" onclick="finish()">Finish</button>
+        <button id="next-question-btn" onclick="nextQuestion()">Next Question</button>
 
+      </div>
+      <div class="hidden" id="question-4">
+        <h3>Which one best describes you?</h3><br><br>
+        <input type="radio" name="question4" id ="response" value="4-option1" onclick="getIndexes('4-option1')" />
+        <label for="option1">I often long for excitement and my friends call me the life of the party.</label><br><br>
+
+        <input type="radio" name="question4" value="4-option2" onclick="getIndexes('4-option2')" />
+        <label for="option2">I get most of my energy from being around others and I like to think out loud.</label><br><br>
+
+        <input type="radio" name="question4" value="4-option3" onclick="getIndexes('4-option3')" />
+        <label for="option3">I like to go out once in a awhile but I also need my alone time.</label><br><br>
+
+        <input type="radio" name="question4" value="4-option4" onclick="getIndexes('4-option4')" />
+        <label for="option4">I find socializing draining and I prefer to be on my own most of the time.</label><br><br>
+
+        <button id="back-button" onclick="previousQuestion()">Back</button>
+        <button id="next-question-btn" onclick="finish()">Finish</button>
       </div>
     </div>
 
@@ -84,6 +118,7 @@
 
 
   <script type="text/javascript" src="js/p5.min.js"></script>
+   <script type="text/javascript" src="js/sdfs.js"></script>
   <script src="js/createCharacter.js"></script>
 </body>
 
