@@ -56,6 +56,93 @@ function sdCircle(pixel, center, radius) {
 //     pixel[0] -= clamp( pixel[0], -2.0, 0.0 );
 //     return -length(p)*sign(pixel[1]);
 // }
+function sdStar(pixel, center, radius, n, m) {
+    const an = Math.PI / n;
+    const en = Math.PI / m;
+    const acs = { x: Math.cos(an), y: Math.sin(an) };
+    const ecs = { x: Math.cos(en), y: Math.sin(en) };
+  
+    let bn = Math.atan2(pixel[1] - center[1], pixel[0] - center[0]);
+    bn = ((bn % (2 * an)) + 2 * an) % (2 * an) - an;
+    const distToCenter = Math.sqrt((pixel[0] - center[0]) * (pixel[0] - center[0]) + (pixel[1] - center[1]) * (pixel[1] - center[1]));
+    const x = distToCenter * Math.cos(bn);
+    const y = Math.abs(distToCenter * Math.sin(bn));
+    const p = { x, y };
+  
+    p.x -= radius * acs.x;
+    p.y -= radius * acs.y;
+    const proj = (p.x * ecs.x + p.y * ecs.y) / (ecs.x * ecs.x + ecs.y * ecs.y);
+    p.x += ecs.x * Math.max(-proj, 0);
+    p.y += ecs.y * Math.max(-proj, 0);
+  
+    return Math.sqrt(p.x * p.x + p.y * p.y) * Math.sign(p.x);
+  }
+
+  function sdBlobbyCross(pixel, center, he) {
+    let pos = [Math.abs(pixel[0] - center[0]), Math.abs(pixel[1] - center[1])];
+    pos = [Math.abs(pos[0] - pos[1]), 1.0 - pos[0] - pos[1]].map(x => x / Math.sqrt(2.0));
+  
+    const p = (he - pos[1] - 0.25 / he) / (6.0 * he);
+    const q = pos[0] / (he * he * 16.0);
+    const h = q * q - p * p * p;
+  
+    let x;
+    if (h > 0.0) {
+      const r = Math.sqrt(h);
+      x = Math.pow(q + r, 1.0 / 3.0) - Math.pow(Math.abs(q - r), 1.0 / 3.0) * Math.sign(r - q);
+    } else {
+      const r = Math.sqrt(p);
+      x = 2.0 * r * Math.cos(Math.acos(q / (p * r)) / 3.0);
+    }
+    x = Math.min(x, Math.sqrt(2.0) / 2.0);
+  
+    const z = [x, he * (1.0 - 2.0 * x * x)].map((v, i) => v - pos[i]);
+    return Math.sqrt(z[0] * z[0] + z[1] * z[1]) * Math.sign(z[1]);
+  }
+
+function sdCross(pixel, center, size, radius) {
+  const px = Math.abs(pixel[0] - center[0]);
+  const py = Math.abs(pixel[1] - center[1]);
+  const p = [py, px];
+
+  const q = [p[0] - size[1], p[1] - size[0]];
+  const k = Math.max(q[0], q[1]);
+  const w = k > 0 ? q : [size[1] - p[1], -k];
+
+  const d = Math.sqrt(w[0] * w[0] + w[1] * w[1]);
+  return (k > 0 ? d : -d) + radius;
+}
+
+function sdRoundedCross(p, h, center) {
+    const k = 0.5 * (h + 1.0 / h); // k should be const at modeling time
+    p = [Math.abs(p[0] - center[0]), Math.abs(p[1] - center[1])];
+    const d1 = p[0] - (k - h);
+    const d2 = Math.max(p[0] - k, p[1] - h);
+    return Math.sqrt(Math.min(Math.max(d1, d2), dot(p, p)));
+    
+  }
+
+  function dot(a, b) {
+    return a.x * b.x + a.y * b.y;
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
   
   
   
