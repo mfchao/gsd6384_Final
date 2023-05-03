@@ -87,29 +87,16 @@ vec3 calculateColor(vec2 coord, int shapeIndex, int edgeNumIndex, int edgeIndex,
 
     float circleR =  u_circle.z;
     float boxR = u_box.z;
-    float star1M = u_star1.z;
+    float star1M = u_star1.w;
     float star2N = u_star2.z;
     float star2M = u_star2.w;
-  
-  
-  // Compute the SDF for the current pixel based on the selected shape
-  if (shapeIndex == 0) {
-    sdfValue = sdBlobbyCross(u_circle.xy - gl_FragCoord.xy, circleR) - 80.0;
+
+    vec2 center = u_circle.xy;
+    if (u_circle.xy == vec2(0,0)){
+        center = vec2(250,250);
     }
-    else if (shapeIndex == 1) {
-    sdfValue = sdCross(u_box.xy - gl_FragCoord.xy, u_boxDim.xy, boxR);
-    }
-    else if (shapeIndex == 2) {
-    sdfValue = sdStar(u_star1.xy - gl_FragCoord.xy, u_starR, star1M, u_star1.w);
-    }
-    else if (shapeIndex == 3) {
-    sdfValue = sdStar(u_star2.xy - gl_FragCoord.xy, u_starR, star2N, star2M) - 20.0;
-    }
-    else {
-    // handle the case where shapeIndex is not one of the expected values
-    }
-  
-  // Apply edge complexity
+ 
+    // Apply edge complexity
   if (edgeNumIndex == 1) {
     circleR = -150.0;
     boxR = 120.0;
@@ -138,6 +125,26 @@ vec3 calculateColor(vec2 coord, int shapeIndex, int edgeNumIndex, int edgeIndex,
     star2N = 5.;
     star2M = 6.;
   }
+  
+  
+  // Compute the SDF for the current pixel based on the selected shape
+  if (shapeIndex == 0) {
+    sdfValue = sdBlobbyCross(center.xy - gl_FragCoord.xy, circleR) - 80.0;
+    }
+    else if (shapeIndex == 1) {
+    sdfValue = sdCross(u_box.xy - gl_FragCoord.xy, u_boxDim.xy, boxR);
+    }
+    else if (shapeIndex == 2) {
+    sdfValue = sdStar(u_star1.xy - gl_FragCoord.xy, u_starR, u_star1.z, star1M);
+    }
+    else if (shapeIndex == 3) {
+    sdfValue = sdStar(u_star2.xy - gl_FragCoord.xy, u_starR, star2N, star2M) - 20.0;
+    }
+    else {
+    // handle the case where shapeIndex is not one of the expected values
+    }
+  
+  
   
   // Apply edge roundness
     float edgeRoundness = 1.0;
@@ -182,29 +189,39 @@ vec3 calculateColor(vec2 coord, int shapeIndex, int edgeNumIndex, int edgeIndex,
     vec3 finalColor;
     if (colorIndex == 1) {
     
-    if (sdfValue >= 0.2) {
+    if (sdfValue <= 0.5) {
         finalColor = vec3(1.0, 0.686, 0.098); // orange
+    } else {
+    finalColor = vec3(1.0); // white
     }
     } else if (colorIndex == 2) {
        
-        if (sdfValue >= 0.2) {
+        if (sdfValue <= 0.5) {
          finalColor = vec3(0.85, 0.212, 0.212); // red
-        }
+        } else {
+    finalColor = vec3(1.0); // white
+    }
     } else if (colorIndex == 3) {
         
-        if (sdfValue >= 0.2) {
+        if (sdfValue <= 0.5) {
            finalColor = vec3(0.071, 0.631, 0.769); // blue
-        }
+        }  else {
+    finalColor = vec3(1.0); // white
+    }
     } else if (colorIndex == 4) {
        
-        if (sdfValue >= 0.2) {
+        if (sdfValue <= 0.5) {
              finalColor = vec3(0.361, 0.588, 0.255); // green
-        }
+        }  else {
+    finalColor = vec3(1.0); // white
+    }
     } else if (colorIndex == 5) {
        
-        if (sdfValue >= 0.2) {
+        if (sdfValue <= 0.5) {
             finalColor = vec3(0.835, 0.541, 0.871); // purple
-        }
+        }  else {
+    finalColor = vec3(1.0); // white
+    }
     } else {
         finalColor = vec3(sdfValue);
     }
@@ -215,6 +232,8 @@ vec3 calculateColor(vec2 coord, int shapeIndex, int edgeNumIndex, int edgeIndex,
 
 void main() {
   // Calculate the pixel position
+  
+
   vec2 fragCoord = (2.0 * (gl_FragCoord.xy / u_resolution.xy)) - 1.0;
   
   // Calculate the RGB color based on the shapeType, edgeNumType, edgeType, colorType, and bandType

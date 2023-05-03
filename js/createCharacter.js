@@ -272,6 +272,7 @@ function getIndexes(optionValue) {
   } else if (optionValue === "0-option4") {
     shapeType = 3;
     myShader.setUniform('u_star2', [star2.center[0], star2.center[1], star2.n, star2.m]);
+    myShader.setUniform('u_starR', star1.radius);
     console.log("got shape 3");
   }
 
