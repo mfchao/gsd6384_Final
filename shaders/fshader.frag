@@ -22,6 +22,9 @@ uniform vec4 u_star1;
 uniform vec4 u_star2;
 uniform float u_starR;
 
+uniform vec4 u_planA;
+uniform vec4 u_planB;
+
 
 uniform vec2 u_position;
 
@@ -31,6 +34,8 @@ uniform int u_edgeType;
 uniform int u_colorType;
 uniform int u_bandType;
 uniform bool u_showSinRings;
+
+const float aa = 2.0;
 
 
 
@@ -78,23 +83,53 @@ float sdCross( in vec2 p, in vec2 b, float r )
     return sign(k)*length(max(w,0.0)) + r;
 }
 
+float sdBox( in vec2 p, in vec2 b )
+{
+    vec2 d = abs(p)-b;
+    return length(max(d,0.0)) + min(max(d.x,d.y),0.0);
+}
+
+float opUnion(float d1, float d2) {
+    return min(d1, d2);
+}
+
+float opSmoothUnion(float a, float b, float k) {
+    float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
+    return mix(b, a, h) - k * h * (1.0 - h);
+}
 
 vec3 calculateColor(vec2 coord, int shapeIndex, int edgeNumIndex, int edgeIndex, int colorIndex, int bandIndex, bool showSinRings) {
   float r, g, b;
   float sdfValue = 0.0;
   float gray;
   float bandwidth = 0.0;
+  float circleFactor = 60.;
+  float star2Factor = 10.;
+  float planSDF = 0.0;
 
     float circleR =  u_circle.z;
     float boxR = u_box.z;
     float star1M = u_star1.w;
     float star2N = u_star2.z;
     float star2M = u_star2.w;
+    vec2 boxDims = u_boxDim.xy;
+    float starRadius = u_starR;
+    vec2 center = vec2(250,250);
 
-    vec2 center = u_circle.xy;
-    if (u_circle.xy == vec2(0,0)){
+    //finish button pressed
+    if (u_mouse == vec2(0,0)) {
         center = vec2(250,250);
+    } else {
+        center = u_mouse;
+
+        //scale down
+        circleFactor *= 0.5; 
+        star2Factor *= 0.5;
+        boxDims *= 0.5;
+        starRadius *= 0.5;
     }
+
+    
  
     // Apply edge complexity
   if (edgeNumIndex == 1) {
@@ -129,16 +164,16 @@ vec3 calculateColor(vec2 coord, int shapeIndex, int edgeNumIndex, int edgeIndex,
   
   // Compute the SDF for the current pixel based on the selected shape
   if (shapeIndex == 0) {
-    sdfValue = sdBlobbyCross(center.xy - gl_FragCoord.xy, circleR) - 80.0;
+    sdfValue = sdBlobbyCross(center.xy - gl_FragCoord.xy, circleR) - circleFactor;
     }
     else if (shapeIndex == 1) {
-    sdfValue = sdCross(u_box.xy - gl_FragCoord.xy, u_boxDim.xy, boxR);
+    sdfValue = sdCross(center.xy - gl_FragCoord.xy, boxDims.xy, boxR);
     }
     else if (shapeIndex == 2) {
-    sdfValue = sdStar(u_star1.xy - gl_FragCoord.xy, u_starR, u_star1.z, star1M);
+    sdfValue = sdStar(center.xy - gl_FragCoord.xy, starRadius, u_star1.z, star1M);
     }
     else if (shapeIndex == 3) {
-    sdfValue = sdStar(u_star2.xy - gl_FragCoord.xy, u_starR, star2N, star2M) - 20.0;
+    sdfValue = sdStar(center.xy - gl_FragCoord.xy, starRadius, star2N, star2M) - star2Factor;
     }
     else {
     // handle the case where shapeIndex is not one of the expected values
@@ -187,6 +222,7 @@ vec3 calculateColor(vec2 coord, int shapeIndex, int edgeNumIndex, int edgeIndex,
 
     // Apply color
     vec3 finalColor;
+
     if (colorIndex == 1) {
     
     if (sdfValue <= 0.5) {
@@ -226,9 +262,36 @@ vec3 calculateColor(vec2 coord, int shapeIndex, int edgeNumIndex, int edgeIndex,
         finalColor = vec3(sdfValue);
     }
 
+    if (u_planA != vec4(0,0,0,0)) {
+        float planA_sdf = sdBox(u_planA.xy - gl_FragCoord.xy, u_planA.zw);
+        float planB_sdf = sdBox(u_planB.xy - gl_FragCoord.xy, u_planB.zw);
+        float sdfPlan = opUnion(planA_sdf, planB_sdf);
+
+        // Solid AA stroke
+        float dw = abs(sdfPlan);
+        float gray = smoothstep(10. - 0.5 * aa, 10. + 0.5 * aa, dw);
+        
+
+         float unionWall = opSmoothUnion(gray, sdfValue, -0.2);
+
+         vec3 planColor = vec3(unionWall,unionWall,unionWall);
+
+        // Linearly interpolate each of the color channels between
+        planColor = mix(planColor, vec3(1.0), 1.0 - smoothstep(0.0, 0.01, abs(sdfPlan)));
+
+        float planSmoothness = 0.4;
+        // Combine the final color with the plan SDF
+        finalColor = mix(finalColor, planColor, smoothstep(0.0, planSmoothness, sdfPlan));
+    }
+
+    return finalColor;
+    
+
     return finalColor;
 
 }
+
+
 
 void main() {
   // Calculate the pixel position
@@ -240,6 +303,32 @@ void main() {
   vec3 color = calculateColor(fragCoord.xy, u_shapeType, u_edgeNumType, u_edgeType, u_colorType, u_bandType, u_showSinRings);
 
 
+//   if (u_planA != vec4(0,0,0,0)) {
+//     float planA = sdBox(u_planA.xy - gl_FragCoord.xy, u_planA.zw);
+//     float planB = sdBox(u_planB.xy - gl_FragCoord.xy, u_planB.zw);
+//     float sdfPlan = opUnion(planA, planB);
+    
+//     // // Solid AA stroke
+//     float dw = abs(sdfPlan);
+//     float gray = smoothstep(10. - 0.5 * aa, 10. + 0.5 * aa, dw);
+//     vec3 u_planColor = vec3(gray,gray,gray);
+
+//     // Set pixel color based on SDF sign
+//     // vec3 u_planColor = (sdfPlan > 0.0) ? vec3(0.9, 0.6, 0.3) : vec3(0.65, 0.85, 1.0);
+
+//     //wavy
+//     // u_planColor *= 0.8 + 0.2 * cos(150.0 * sdfPlan);
+
+//     // Linearly interpolate each of the color channels between
+//     u_planColor = mix(u_planColor, vec3(1.0), 1.0 - smoothstep(0.0, 0.01, abs(sdfPlan)));
+
+//     float u_planSmoothness = 0.4;
+//     // Combine the final color with the plan SDF
+//     vec3 finalCol = mix(color, u_planColor, smoothstep(0.0, u_planSmoothness, sdfPlan));
+//     color = finalCol;
+
+
+//   } 
   gl_FragColor = vec4(color, 1.0);
 }
 // void main() {

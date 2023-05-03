@@ -8,25 +8,35 @@ const circle = {
 
 const box = {
   center: [250, 250],
-  dim: [100,100],
+  dim: [50,50],
   r: 1
+};
+
+const planA = {
+  center: [350, 450],
+  dim: [300,100],
+};
+
+const planB = {
+  center: [500, 300],
+  dim: [100,300],
 };
 
 const cross = {
   center: [250, 250],
-  diameter: 10,
+  diameter: 5,
 };
 
 const star1 = {
   center: [250, 250],
-  radius: 80,
+  radius: 60,
   n: 3,
   m: 2,
 }
 
 const star2 = {
   center: [250, 250],
-  radius: 80,
+  radius: 50,
   n: 8,
   m: 3,
 }
@@ -37,6 +47,7 @@ let edgeType = 0;
 let colorType = 0;
 let bandType = 0;
 let showSinRings = false; // initially set to false
+let finished = false;
 
 
 
@@ -58,7 +69,12 @@ function draw() {
   // Send whichever information we want to pass to the shader
   // using uniforms
   myShader.setUniform('u_resolution', [width, height]);
-  // myShader.setUniform('u_mouse', [mouseX, height - mouseY]);
+
+  if (finished) {
+    myShader.setUniform('u_mouse', [mouseX, height - mouseY]);
+    myShader.setUniform('u_planA', [planA.center[0], planA.center[1], planA.dim[0], planA.dim[1]]);
+    myShader.setUniform('u_planB', [planB.center[0], planB.center[1], planB.dim[0], planB.dim[1]]);
+  }
   // myShader.setUniform('u_time', 0.001 * millis()); // time in secs
   
   // myShader.setUniform('u_border', [circle.border]);
@@ -431,50 +447,6 @@ function previousQuestion() {
   }
 }
 
-// function updateShapeType(optionValue) {
-// let shapeType;
-// // optionValue is the unique value assigned to the clicked option
-// if (optionValue === 'option1') {
-//   shapeType = circle;
-//   myShader.setUniform('u_circle', [shapeType.center[0], shapeType.center[1], shapeType.r]);
-//   console.log(shapeType)
-// } else if (optionValue === 'option2') {
-//   shapeType = box;
-//   myShader.setUniform('u_box', [shapeType.center[0], shapeType.center[1]]);
-//   myShader.setUniform('u_boxDim', shapeType.dimensions[0], shapeType.dimensions[1]);
-//   console.log(shapeType)
-// } else if (optionValue === 'option3') {
-//   shapeType = triangle;
-//   myShader.setUniform('u_triangle', [shapeType.center[0], shapeType.center[1]]);
-//   console.log(shapeType)
-// } else if (optionValue === 'option4') {
-//   shapeType = cross;
-//   myShader.setUniform('u_cross', [shapeType.center[0], shapeType.center[1], shapeType.diameter]);
-//   console.log(shapeType);
-// }
-// // myShader.setUniform('shapeType', shapeType);
-// console.log("set uniform")
-//}
-
-// function updateEdgeType(optionValue) {
-  // let edgeIndex;
-  // // optionValue is the unique value assigned to the clicked option
-  // if (optionValue === 'option1') {
-  //   edgeIndex = 0;
-  //   console.log(edgeIndex)
-  // } else if (optionValue === 'option2') {
-  //   edgeIndex = 1;
-  //   console.log(edgeIndex)
-  // } else if (optionValue === 'option3') {
-  //   edgeIndex = 2;
-  //   console.log(edgeIndex)
-  // } else if (optionValue === 'option4') {
-  //   edgeIndex = 3;
-  //   console.log(edgeIndex)
-  // }
-  // myShader.setUniform('edgeIndex', edgeIndex);
-  // console.log("set uniform")
-// }
 
 
 function finish() {
@@ -489,6 +461,9 @@ function finish() {
 
   // Get the canvas object
   let canvas = createCanvas(windowWidth, windowHeight);
+
+  finished = true;
+  console.log("finished?" + finished)
 
   // Set the canvas to be fullscreen
   canvas.style("position", "absolute");
