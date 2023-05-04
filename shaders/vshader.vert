@@ -19,3 +19,5 @@ void main() {
   // send the vertex information on to the fragment shader
   gl_Position = positionVec4;
 }
+
+ 

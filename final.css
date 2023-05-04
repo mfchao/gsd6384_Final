@@ -83,14 +83,15 @@ h6 {
     flex-direction: row;
     align-items: center;
     justify-content: center; 
+    margin-top: 150px;
   }
 
 p, label {
-  letter-spacing: .05em;
+  letter-spacing: .1em;
     font-family: 'Neue Montreal', sans-serif;
     color: #000000;
     font-size: 1em;
-    font-weight: 100;
+    font-weight: 200;
     margin-right: 8px;
     text-align: center;
    
@@ -99,6 +100,7 @@ p, label {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-right: 50px;
 }
 
 .question {
@@ -112,6 +114,7 @@ p, label {
   border: 1px solid black;
   border-radius: 10px;
   margin-bottom: 20px;
+  margin-top: 100px;
 }
 
 .question:first-of-type {
@@ -133,6 +136,7 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
+ 
 }
 
 .hidden {
@@ -147,3 +151,43 @@ img {
   height: 100%;
   object-fit: cover;
 }
+
+button {
+  border: 2px solid black;
+  border-radius: 10px;
+  padding: 10px;
+  letter-spacing: .05em;
+    font-family: 'Neue Montreal', sans-serif;
+    color: #000000;
+    font-size: 1em;
+    font-weight: 400;
+    margin-right: 8px;
+}
+
+input[type="radio"] {
+  -webkit-appearance: none;
+  content: "";
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-right: 10px;
+  border: 2px solid black;
+  border-radius: 5px;
+
+}
+
+
+
+/* Style the custom radio button when selected */
+input[type="radio"]:checked  {
+  background-color: rgb(117, 216, 255);
+}
+
+a {
+  -webkit-appearance: none;
+  font-family: 'Neue Montreal', sans-serif;
+  color: #000000;
+  font-size: 1em;
+  font-weight: 500;
+}
+

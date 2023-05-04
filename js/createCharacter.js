@@ -6,10 +6,10 @@ const circle = {
   r: 2,
 };
 
-const box = {
-  center: [250, 250],
-  dim: [50,50],
-  r: 1
+const trapezoid = {
+  r1: 50.0,
+  r2: 50.0,
+  he: 50,
 };
 
 const planA = {
@@ -275,8 +275,8 @@ function getIndexes(optionValue) {
     
   } else if (optionValue === "0-option2") {
     shapeType = 1;
-    myShader.setUniform('u_box', [box.center[0], box.center[1], box.r]);
-    myShader.setUniform('u_boxDim', [box.dim[0], box.dim[1]]);
+    myShader.setUniform('u_trapezoid', [trapezoid.r1, trapezoid.r2, trapezoid.he]);
+    // myShader.setUniform('u_boxDim', [box.dim[0], box.dim[1]]);
     console.log("got shape 1");
 
   } else if (optionValue === "0-option3") {
@@ -460,7 +460,7 @@ function finish() {
   //   }
 
   // Get the canvas object
-  let canvas = createCanvas(windowWidth, windowHeight);
+  let canvas = createCanvas(800, 800);
 
   finished = true;
   console.log("finished?" + finished)

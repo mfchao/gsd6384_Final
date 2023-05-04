@@ -16,8 +16,8 @@ uniform float u_shapeGreen;
 uniform float u_shapeBlue;
 
 uniform vec3 u_circle;
-uniform vec3 u_box;
-uniform vec2 u_boxDim;
+uniform vec3 u_trapezoid;
+// uniform vec2 u_boxDim;
 uniform vec4 u_star1;
 uniform vec4 u_star2;
 uniform float u_starR;
@@ -73,15 +73,22 @@ float sdBlobbyCross( in vec2 pos, float he )
     return length(z) * sign(z.y);
 }
 
-
-float sdCross( in vec2 p, in vec2 b, float r ) 
-{
-    p = abs(p); p = (p.y>p.x) ? p.yx : p.xy;
-    vec2  q = p - b;
-    float k = max(q.y,q.x);
-    vec2  w = (k>0.0) ? q : vec2(b.y-p.x,-k);
-    return sign(k)*length(max(w,0.0)) + r;
+float dot2(vec2 v) {
+return v.x*v.x + v.y*v.y;
 }
+
+float sdTrapezoid( in vec2 p, in float r1, float r2, float he )
+{
+    vec2 k1 = vec2(r2,he);
+    vec2 k2 = vec2(r2-r1,2.0*he);
+    p.x = abs(p.x);
+    vec2 ca = vec2(p.x-min(p.x,(p.y<0.0)?r1:r2), abs(p.y)-he);
+    vec2 cb = p - k1 + k2*clamp( dot(k1-p,k2)/dot2(k2), 0.0, 1.0 );
+    float s = (cb.x<0.0 && ca.y<0.0) ? -1.0 : 1.0;
+    return s*sqrt( min(dot2(ca),dot2(cb)) );
+}
+
+
 
 float sdBox( in vec2 p, in vec2 b )
 {
@@ -108,12 +115,16 @@ vec3 calculateColor(vec2 coord, int shapeIndex, int edgeNumIndex, int edgeIndex,
   float planSDF = 0.0;
 
     float circleR =  u_circle.z;
-    float boxR = u_box.z;
+    // float boxR = u_box.z;
     float star1M = u_star1.w;
     float star2N = u_star2.z;
     float star2M = u_star2.w;
-    vec2 boxDims = u_boxDim.xy;
+    // vec2 boxDims = u_boxDim.xy;
     float starRadius = u_starR;
+    float trapTop = u_trapezoid.x;
+    float trapBottom =  u_trapezoid.y; 
+    float trapHeight = u_trapezoid.z;
+
     vec2 center = vec2(250,250);
 
     //finish button pressed
@@ -125,7 +136,7 @@ vec3 calculateColor(vec2 coord, int shapeIndex, int edgeNumIndex, int edgeIndex,
         //scale down
         circleFactor *= 0.5; 
         star2Factor *= 0.5;
-        boxDims *= 0.5;
+        // boxDims *= 0.5;
         starRadius *= 0.5;
     }
 
@@ -134,28 +145,32 @@ vec3 calculateColor(vec2 coord, int shapeIndex, int edgeNumIndex, int edgeIndex,
     // Apply edge complexity
   if (edgeNumIndex == 1) {
     circleR = -150.0;
-    boxR = 120.0;
+    // boxR = 120.0;
+    trapTop *= 0.2;
     star1M = 2.8;
     star2N = 20.;
     star2M = 18.;
   }
   else if (edgeNumIndex == 2) {
     circleR = -100.;
-    boxR = 80.;
+    // boxR = 10.;
+    trapTop *= 0.5;
     star1M = 2.5;
     star2N = 10.;
     star2M = 8.;
   }
   else if (edgeNumIndex == 3) {
    circleR = -50.;
-    boxR = -20.;
+    // boxR = -20.;
+    trapTop *= 1.2;
     star1M = 2.2;
     star2N = 7.;
     star2M = 2.;
   }
   else if (edgeNumIndex == 4) {
     circleR = -20.;
-    boxR = -70.;
+    // boxR = -70.;
+    trapTop *= 1.5;
     star1M = 1.9;
     star2N = 5.;
     star2M = 6.;
@@ -167,7 +182,7 @@ vec3 calculateColor(vec2 coord, int shapeIndex, int edgeNumIndex, int edgeIndex,
     sdfValue = sdBlobbyCross(center.xy - gl_FragCoord.xy, circleR) - circleFactor;
     }
     else if (shapeIndex == 1) {
-    sdfValue = sdCross(center.xy - gl_FragCoord.xy, boxDims.xy, boxR);
+    sdfValue = sdTrapezoid(center.xy - gl_FragCoord.xy, trapTop, trapBottom, trapHeight);
     }
     else if (shapeIndex == 2) {
     sdfValue = sdStar(center.xy - gl_FragCoord.xy, starRadius, u_star1.z, star1M);
